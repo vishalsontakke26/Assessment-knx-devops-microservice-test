@@ -1,5 +1,9 @@
 pipeline {
         agent any 
+        environment{
+        git_TKN=credentials('git_TKN')
+           }
+
         stages {
           stage('pull-code') { 
             steps {
@@ -16,7 +20,7 @@ pipeline {
          stage('push') { 
             steps {
               sh 'sudo docker tag test1:v2 vishalsontakke/test1:v2'
-              sh'sudo docker login -u vishalsontakke --password Vishal@123'
+              sh'sudo docker login -u vishalsontakke --password $git_TKN'
               sh'sudo docker push vishalsontakke/test1:v2'
 
             }
