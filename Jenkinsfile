@@ -1,26 +1,34 @@
-#!/usr/bin/env groovy
 pipeline {
-    agent {
-        node any
-    }
-
-    stages {
-        stage('Build Image') {
-            when {
-                branch 'master'  //only run these steps on the master branch
-            }
-
-            // Jenkins Stage to Build the Docker Image
-
-        }
-
-        stage('Publish Image') {
-            when {
-                branch 'master'  //only run these steps on the master branch
-            }
+        agent any 
+        stages {
+          stage('pull-code') { 
+            steps {
+                git credentialsId: 'github_TKN', url: 'https://github.com/vishalsontakke26/Assessment-knx-devops-microservice-test.git'
+                 }
+                     }
             
-            // Jenkins Stage to Publish the Docker Image to Dockerhub or any Docker repository of your choice.
+        stage('Build') { 
+            steps {
+             sh 'sudo docker build -t test1:v2 .'
+            }
+              }
+          
+         stage('push') { 
+            steps {
+              sh 'sudo docker tag test1:v2 vishalsontakke/test1:v2'
+              sh'sudo docker login -u vishalsontakke --password Vishal@123'
+              sh'sudo docker push vishalsontakke/test1:v2'
 
-        }
+            }
+          }
+          stage('pull & deploy') { 
+            steps {
+             
+              sh'sudo docker pull vishalsontakke/test1:v2'
+              sh'sudo docker run -d -p 80:80 vishalsontakke/test1:v2'
+
+            }
+          }
+          
+      } 
     }
-}
